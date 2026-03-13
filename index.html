@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Lista de Productos</title>
+    <style>
+        table { width: 100%; border-collapse: collapse; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+        th { background-color: #f2f2f2; }
+    </style>
+</head>
+<body>
+    <h1>Mis Productos</h1>
+    <a href="crear.html"><button>Agregar Producto</button></a>
+    
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Nombre</th>
+                <th>Precio</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody id="tabla-productos">
+            </tbody>
+    </table>
+
+    <script>
+        // URL de tu API (cambia localhost por la de Render después)
+        const API_URL = "http://localhost:3000/productos";
+
+        function cargarProductos() {
+        fetch(API_URL)
+        .then(res => res.json())
+        .then(productos => {
+            const tabla = document.getElementById('tabla-productos');
+            tabla.innerHTML = "";
+            productos.forEach(p => {
+         tabla.innerHTML += `
+        <tr>
+            <td>${p.id}</td>
+            <td>${p.nombre}</td>
+            <td>$${p.precio}</td>
+            <td>
+                <button onclick="window.location.href='editar.html?id=${p.id}'">Editar</button>
+                
+                <button onclick="window.location.href='eliminar.html?id=${p.id}'">Eliminar</button>
+            </td>
+        </tr>
+    `;
+}
+);
+        });
+}
+
+        function eliminar(id) {
+            if(confirm("¿Seguro que quieres eliminarlo?")) {
+                fetch(`${API_URL}/${id}`, { method: 'DELETE' })
+                    .then(() => cargarProductos());
+            }
+        }
+
+        cargarProductos();
+    </script>
+</body>
+</html>

@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Confirmar Eliminación</title>
+</head>
+<body>
+    <h1>¿Eliminar Producto?</h1>
+    <div id="detalle-producto">
+        <p>Cargando información del producto...</p>
+    </div>
+
+    <button id="btn-confirmar" style="display:none; color: white; background-color: red;">
+        Sí, Eliminar definitivamente
+    </button>
+    <a href="index.html"><button>No, Cancelar</button></a>
+
+    <script>
+        const API_URL = "http://localhost:3000/productos";
+        const urlParams = new URLSearchParams(window.location.search);
+        const id = urlParams.get('id');
+
+        // 1. Obtener los datos del producto para mostrar qué se va a borrar
+        fetch(`${API_URL}/${id}`)
+            .then(res => res.json())
+            .then(p => {
+                if(p) {
+                    document.getElementById('detalle-producto').innerHTML = `
+                        <p><strong>ID:</strong> ${p.id}</p>
+                        <p><strong>Nombre:</strong> ${p.nombre}</p>
+                        <p><strong>Precio:</strong> $${p.precio}</p>
+                        <p style="color:red;">Esta acción no se puede deshacer.</p>
+                    `;
+                    document.getElementById('btn-confirmar').style.display = 'inline-block';
+                } else {
+                    document.getElementById('detalle-producto').innerHTML = "<p>Producto no encontrado.</p>";
+                }
+            });
+
+        // 2. Ejecutar la eliminación al confirmar
+        document.getElementById('btn-confirmar').onclick = function() {
+            fetch(`${API_URL}/${id}`, { method: 'DELETE' })
+                .then(() => {
+                    alert("Producto eliminado correctamente");
+                    window.location.href = "index.html";
+                })
+                .catch(err => console.error("Error al eliminar:", err));
+        };
+    </script>
+</body>
+</html>
